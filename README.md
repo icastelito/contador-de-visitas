@@ -96,26 +96,28 @@ curl -X POST http://localhost:3000/api/register \
 ```
 
 **Resposta:**
+
 ```json
 {
-  "success": true,
-  "siteId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-  "customizable": true,
-  "script": "<!-- código pronto para copiar -->",
-  "endpoints": {
-    "badge": "http://localhost:3000/api/badge/f47ac10b...",
-    "count": "http://localhost:3000/api/count/f47ac10b...",
-    "increment": "http://localhost:3000/api/count/f47ac10b.../increment",
-    "stats": "http://localhost:3000/api/stats/f47ac10b..."
-  }
+	"success": true,
+	"siteId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+	"customizable": true,
+	"script": "<!-- código pronto para copiar -->",
+	"endpoints": {
+		"badge": "http://localhost:3000/api/badge/f47ac10b...",
+		"count": "http://localhost:3000/api/count/f47ac10b...",
+		"increment": "http://localhost:3000/api/count/f47ac10b.../increment",
+		"stats": "http://localhost:3000/api/stats/f47ac10b..."
+	}
 }
 ```
 
 **💡 Guarde o `siteId` retornado!** Você vai precisar dele em todas as requisições.
 
 **Parâmetros:**
-- `customizable: true` → Retorna exemplo de código para criar sua própria tag
-- `customizable: false` → Retorna widget completo (badge + LGPD)
+
+-   `customizable: true` → Retorna exemplo de código para criar sua própria tag
+-   `customizable: false` → Retorna widget completo (badge + LGPD)
 
 ---
 

@@ -147,6 +147,7 @@ curl -X POST https://contador.seudominio.com/api/register \
 ```
 
 **Você vai receber uma resposta assim:**
+
 ```json
 {
   "success": true,

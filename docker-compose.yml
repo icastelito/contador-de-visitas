@@ -3,7 +3,7 @@ services:
         build: .
         container_name: contador-visitas-app
         ports:
-            - "3000:3000"
+            - "127:3000"
         environment:
             - NODE_ENV=production
         env_file:
