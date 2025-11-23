@@ -64,6 +64,7 @@ router.post("/register", async (req, res) => {
 			siteId: siteId,
 			customizable: site.customizable,
 			script: script,
+			scriptFormatted: script.replace(/\\n/g, "\n"), // Script formatado para copiar
 			endpoints: {
 				badge: `${baseUrl}/api/badge/${siteId}`,
 				count: `${baseUrl}/api/count/${siteId}`,

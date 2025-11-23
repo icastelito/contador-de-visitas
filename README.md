@@ -1,108 +1,140 @@
-# 📊 Contador de Visitas
+# 📊 Visit Counter API
 
-Sistema completo de contador de visitas auto-hospedado com Docker, PostgreSQL e suporte a cookies com consentimento LGPD.
+Self-hosted visit counter system with Docker, PostgreSQL, and authentication-based site registration.
 
-## ✨ Funcionalidades
+## ✨ Features
 
--   🎨 **Badge SVG customizável** (4 estilos, cores personalizadas)
--   🔒 **Conformidade LGPD** (banner de consentimento, IPs anonimizados)
--   🍪 **Gerenciamento de cookies** (com permissão do usuário)
--   📈 **Analytics detalhado** (dispositivos, navegadores, geolocalização)
--   🐳 **Docker ready** (deploy fácil com docker-compose)
--   🚀 **API REST completa** (fácil integração)
--   🌍 **Widget JavaScript** (incorporável em qualquer site)
--   ✨ **CORS liberado** - Use de qualquer domínio sem configuração!
--   🆔 **Controle por Site ID** - Cada site tem seu contador único e independente
+-   🎨 **Customizable SVG Badges** (4 styles, custom colors)
+-   🔐 **Authentication System** (secure site registration via API)
+-   🍪 **Cookie-based Visitor Tracking** (unique visitor detection)
+-   📈 **Detailed Analytics** (devices, browsers, geolocation)
+-   🐳 **Docker Ready** (easy deployment with docker-compose)
+-   🚀 **Complete REST API** (easy integration)
+-   🌍 **CORS Enabled** - Use from any domain without configuration!
+-   🆔 **UUID-based Site IDs** - Each site has its own independent counter
+-   📊 **Real-time Stats** (total visits, unique visitors)
 
-## 🏗️ Tecnologias
+## 🏗️ Tech Stack
 
--   **Backend**: Node.js + Express
--   **Banco de dados**: PostgreSQL
+-   **Backend**: Node.js 18 + Express 4.18
+-   **Database**: PostgreSQL 15
 -   **ORM**: Sequelize
 -   **Container**: Docker + Docker Compose
 -   **Analytics**: GeoIP-Lite + UserAgent
+-   **Authentication**: Environment-based credentials
 
-## 📦 Instalação
+## 📦 Quick Start
 
-### 1. Clonar o repositório
+### 1. Clone the Repository
 
 ```bash
-git clone <seu-repositorio>
+git clone https://github.com/icastelito/contador-de-visitas.git
 cd contador-de-visitas
 ```
 
-### 2. Configurar variáveis de ambiente
+### 2. Configure Environment Variables
+
+Create a `.env` file from the example:
 
 ```bash
 cp .env.example .env
 ```
 
-Edite o arquivo `.env` com suas configurações:
+**Edit `.env` with your settings:**
 
 ```env
+# Server
 PORT=3000
 NODE_ENV=production
+
+# PostgreSQL
 DB_HOST=postgres
 DB_PORT=5432
 DB_NAME=contador_visitas
 DB_USER=postgres
-DB_PASSWORD=sua_senha_segura_aqui
-COOKIE_SECRET=sua_chave_secreta_aqui
+DB_PASSWORD=your_secure_password_here  # ⚠️ CHANGE THIS!
 
-# Admin (para registrar novos sites)
-ADMIN_USER=seu_usuario
-ADMIN_PASSWORD=sua_senha_forte
+# Application
+COOKIE_SECRET=your_secret_key_here  # ⚠️ CHANGE THIS!
 
-# Base URL (usado para gerar scripts)
+# Admin (for registering new sites)
+ADMIN_USER=your_username  # ⚠️ CHANGE THIS!
+ADMIN_PASSWORD=your_strong_password  # ⚠️ CHANGE THIS!
+
+# Base URL (used to generate scripts)
 BASE_URL=http://localhost:3000
+
+# Default badge customization
+DEFAULT_BADGE_STYLE=flat
+DEFAULT_BADGE_COLOR=4c1
+DEFAULT_LABEL=Visits
 ```
 
-### 3. Instalar dependências (desenvolvimento local)
+**🔒 Generate secure passwords:**
 
 ```bash
+# Database password
+openssl rand -base64 32
+
+# Cookie secret
+openssl rand -base64 48
+```
+
+### 3. Run with Docker (Recommended)
+
+```bash
+# Start containers
+docker compose up -d
+
+# Check status
+docker compose ps
+
+# View logs
+docker compose logs -f
+
+# Stop containers
+docker compose down
+```
+
+Server will be available at `http://localhost:3000`
+
+### 4. Local Development (Optional)
+
+```bash
+# Install dependencies
 npm install
-```
 
-**⚠️ Nota sobre CORS:** O sistema está configurado para aceitar requisições de qualquer origem. O controle de acesso é feito pelo `siteId`, não por domínio. Não é necessário configurar `ALLOWED_ORIGINS`.
-
-### 4. Executar com Docker (Produção)
-
-```bash
-docker-compose up -d
-```
-
-O servidor estará disponível em `http://localhost:3000`
-
-### 5. Executar localmente (Desenvolvimento)
-
-```bash
+# Run development server
 npm run dev
 ```
 
-## 🚀 Como Usar
+**⚠️ Note about CORS:** The system accepts requests from any origin. Access control is done by `siteId`, not by domain.
 
-### Passo 1: Registrar um Novo Site
+## 🚀 Usage Guide
 
-**Antes de usar o contador, você precisa registrar seu site via API:**
+### Step 1: Register a New Site
+
+**Before using the counter, you need to register your site via API:**
 
 ```bash
 curl -X POST http://localhost:3000/api/register \
   -H "Content-Type: application/json" \
   -d '{
-    "user": "seu_usuario",
-    "password": "sua_senha",
+    "user": "your_admin_user",
+    "password": "your_admin_password",
     "customizable": true
   }'
 ```
 
-**Resposta:**
+**Response:**
 
 ```json
 {
 	"success": true,
 	"siteId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
 	"customizable": true,
-	"script": "<!-- código pronto para copiar -->",
+	"script": "<!-- ready-to-use code -->",
+	"scriptFormatted": "<!-- formatted code with line breaks -->",
 	"endpoints": {
 		"badge": "http://localhost:3000/api/badge/f47ac10b...",
 		"count": "http://localhost:3000/api/count/f47ac10b...",
@@ -112,92 +144,71 @@ curl -X POST http://localhost:3000/api/register \
 }
 ```
 
-**💡 Guarde o `siteId` retornado!** Você vai precisar dele em todas as requisições.
+**💡 Save the returned `siteId`!** You'll need it for all requests.
 
-**Parâmetros:**
+**Parameters:**
 
--   `customizable: true` → Retorna exemplo de código para criar sua própria tag
--   `customizable: false` → Retorna widget completo (badge + LGPD)
+-   `customizable: true` → Returns example code to create your own custom tag
+-   `customizable: false` → Returns complete widget (badge + GDPR)
 
 ---
 
-### Opção 1: Tag 100% Customizada (customizable: true)
+### Option 1: 100% Custom Tag (customizable: true)
 
-**Crie seu próprio design e use apenas nossa API para buscar o número!**
+**Create your own design and just use our API to fetch the number!**
 
 ```html
-<!-- Seu design customizado -->
+<!-- Your custom design -->
 <div
 	style="padding: 15px 25px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-     color: white; border-radius: 8px; font-weight: 600;"
+     color: white; border-radius: 8px; font-weight: 600; display: inline-flex; align-items: center;"
 >
-	👁️ <span id="contador">0</span> visitas
+	👁️ <span id="visit-counter">0</span> visits
 </div>
 
-<!-- JavaScript simples -->
+<!-- Simple JavaScript -->
 <script>
-	// Use o siteId que você recebeu no registro!
-	fetch("https://seu-servidor.com/api/count/f47ac10b-58cc-4372-a567-0e02b2c3d479/increment?format=text", {
+	// Use the siteId you received from registration!
+	fetch("https://your-server.com/api/count/f47ac10b-58cc-4372-a567-0e02b2c3d479/increment?format=text", {
 		credentials: "include",
 	})
 		.then((r) => r.text())
-		.then((count) => (document.getElementById("contador").textContent = count));
+		.then((count) => (document.getElementById("visit-counter").textContent = count))
+		.catch((err) => console.error("Error loading counter:", err));
 </script>
 ```
 
-**Formatos disponíveis:**
+**Available formats:**
 
--   `?format=json` - JSON completo `{ totalVisits: 1234, uniqueVisits: 567 }`
--   `?format=text` - Apenas o número `1234`
--   `?format=formatted` - Formatado `1.2K` ou `1.5M`
+-   `?format=json` - Complete JSON `{ totalVisits: 1234, uniqueVisits: 567 }`
+-   `?format=text` - Just the number `1234`
+-   `?format=formatted` - Formatted `1.2K` or `1.5M`
 
 **Endpoints:**
 
--   `GET /api/count/:siteId` - Apenas leitura (não incrementa)
--   `GET /api/count/:siteId/increment` - Incrementa E retorna o valor
+-   `GET /api/count/:siteId` - Read-only (doesn't increment)
+-   `GET /api/count/:siteId/increment` - Increments AND returns the value
 
-[**Ver exemplos completos de tags customizadas →**](http://localhost:3000/custom-examples.html)
-
-### Opção 2: Widget Completo (Tracking Automático)
-
-Adicione no seu HTML, antes do `</body>`:
+### Option 2: SVG Badge
 
 ```html
-<script
-	src="https://seu-servidor.com/widget.js"
-	data-site-id="meu-site"
-	data-show-badge="true"
-	data-badge-position="bottom-right"
-></script>
+<img src="https://your-server.com/api/badge/your-site-id" alt="Visits" />
 ```
 
-**Atributos disponíveis:**
-
--   `data-site-id`: ID único do seu site (obrigatório)
--   `data-show-badge`: Mostrar badge no canto (true/false)
--   `data-badge-position`: Posição do badge (top-left, top-right, bottom-left, bottom-right)
--   `data-auto-consent`: Aceitar cookies automaticamente (true/false)
-
-### Opção 3: Badge SVG Pré-feito
-
-```html
-<img src="https://seu-servidor.com/api/badge/meu-site" alt="Visitas" />
-```
-
-**Customizar badge via URL:**
+**Customize badge via URL:**
 
 ```html
 <img
-	src="https://seu-servidor.com/api/badge/meu-site?style=flat-square&color=blue&label=Visitantes&logo=👁️"
-	alt="Visitas"
+	src="https://your-server.com/api/badge/your-site-id?style=flat-square&color=blue&label=Visitors&logo=👁️"
+	alt="Visits"
 />
 ```
 
-### Opção 3: Tracking Manual (JavaScript)
+### Option 3: Manual Tracking (JavaScript)
 
 ```javascript
-// Registrar visita
-fetch("https://seu-servidor.com/api/track/meu-site", {
+// Track visit
+fetch("https://your-server.com/api/track/your-site-id", {
 	method: "POST",
 	headers: { "Content-Type": "application/json" },
 	credentials: "include",
@@ -207,88 +218,103 @@ fetch("https://seu-servidor.com/api/track/meu-site", {
 	}),
 });
 
-// Obter estatísticas
-const stats = await fetch("https://seu-servidor.com/api/stats/meu-site?days=30").then((r) => r.json());
+// Get statistics
+const stats = await fetch("https://your-server.com/api/stats/your-site-id?days=30").then((r) => r.json());
 console.log(stats);
 ```
 
-## 🎨 Customização
+## 🎨 Customization
 
-### Estilos de Badge
+### Badge Styles
 
--   `flat` - Estilo plano padrão
--   `flat-square` - Quadrado sem bordas arredondadas
--   `plastic` - Efeito plástico 3D
--   `for-the-badge` - Estilo GitHub Actions
+-   `flat` - Default flat style
+-   `flat-square` - Square without rounded borders
+-   `plastic` - 3D plastic effect
+-   `for-the-badge` - GitHub Actions style
 
-### Cores Disponíveis
+### Available Colors
 
 -   `brightgreen`, `green`, `yellowgreen`, `yellow`
 -   `orange`, `red`, `blue`, `lightgrey`
--   Ou use código hex: `007acc`, `4c1`, etc.
+-   Or use hex code: `007acc`, `4c1`, etc.
 
-### Configurar Badge Padrão
+### Configure Default Badge
 
 ```bash
-curl -X PUT https://seu-servidor.com/api/config/meu-site \
+curl -X PUT https://your-server.com/api/config/your-site-id \
   -H "Content-Type: application/json" \
   -d '{
     "badgeStyle": "flat-square",
     "badgeColor": "blue",
-    "badgeLabel": "Visitantes",
+    "badgeLabel": "Visitors",
     "badgeLogo": "👁️"
   }'
 ```
 
 ## 📡 API Endpoints
 
+### `POST /api/register`
+
+Register a new site and get a unique UUID.
+
+**Authentication required:** Admin credentials from `.env`
+
+**Request Body:**
+
+```json
+{
+	"user": "your_admin_user",
+	"password": "your_admin_password",
+	"customizable": true
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "siteId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  "customizable": true,
+  "script": "<!-- ready-to-use code -->",
+  "scriptFormatted": "<!-- formatted with line breaks -->",
+  "endpoints": { ... }
+}
+```
+
 ### `GET /api/badge/:siteId`
 
-Retorna badge SVG com contador de visitas.
+Returns SVG badge with visit counter.
 
 **Query params:**
 
 -   `style`: flat, flat-square, plastic, for-the-badge
--   `color`: Nome da cor ou hex
--   `label`: Texto customizado
--   `logo`: Emoji ou unicode
+-   `color`: Color name or hex code
+-   `label`: Custom text
+-   `logo`: Emoji or unicode
 
 ### `POST /api/track/:siteId`
 
-Registra uma nova visita.
+Registers a new visit.
 
 **Body:**
 
 ```json
 {
-	"page": "https://meusite.com/pagina",
+	"page": "https://mysite.com/page",
 	"referrer": "https://google.com"
-}
-```
-
-### `POST /api/consent/:siteId`
-
-Atualiza consentimento de cookies.
-
-**Body:**
-
-```json
-{
-	"visitorId": "uuid-do-visitante",
-	"cookieConsent": true,
-	"analyticsConsent": true
 }
 ```
 
 ### `GET /api/count/:siteId` ⭐
 
-Retorna contador **sem registrar visita nova** (apenas leitura).
+Returns counter **without registering a new visit** (read-only).
 
 **Query params:**
 
--   `format=json` - Retorna JSON completo (padrão)
--   `format=text` - Retorna apenas o número como texto
--   `format=formatted` - Retorna número formatado (1.2K, 1.5M)
+-   `format=json` - Returns complete JSON (default)
+-   `format=text` - Returns only the number as text
+-   `format=formatted` - Returns formatted number (1.2K, 1.5M)
 
 **Response (JSON):**
 
@@ -311,16 +337,16 @@ Retorna contador **sem registrar visita nova** (apenas leitura).
 1.2K
 ```
 
-### `GET /api/count/:siteId/increment` ⭐ NOVO!
+### `GET /api/count/:siteId/increment` ⭐
 
-**Incrementa o contador E retorna o valor** (tracking + count em uma chamada).
+**Increments the counter AND returns the value** (tracking + count in one call).
 
-Aceita os mesmos query params de formato. Ideal para integração com tags customizadas.
+Accepts the same format query params. Ideal for custom tag integration.
 
-**Exemplo:**
+**Example:**
 
 ```javascript
-fetch("/api/count/meu-site/increment?format=text", {
+fetch("/api/count/my-site/increment?format=text", {
 	credentials: "include",
 })
 	.then((r) => r.text())
@@ -329,11 +355,11 @@ fetch("/api/count/meu-site/increment?format=text", {
 
 ### `GET /api/stats/:siteId`
 
-Retorna estatísticas detalhadas.
+Returns detailed statistics.
 
 **Query params:**
 
--   `days`: Número de dias (padrão: 30)
+-   `days`: Number of days (default: 30)
 
 **Response:**
 
@@ -363,7 +389,7 @@ Retorna estatísticas detalhadas.
 
 ### `PUT /api/config/:siteId`
 
-Atualiza configurações do badge.
+Updates badge configuration.
 
 **Body:**
 
@@ -371,225 +397,267 @@ Atualiza configurações do badge.
 {
 	"badgeStyle": "flat",
 	"badgeColor": "blue",
-	"badgeLabel": "Visitas",
+	"badgeLabel": "Visits",
 	"badgeLogo": "📊",
-	"domain": "meusite.com"
+	"domain": "mysite.com"
 }
 ```
 
-## 🔒 LGPD e Privacidade
+## 🔒 Privacy & Security
 
-### Dados Coletados
+### Collected Data
 
-**Sem consentimento (básico):**
+-   **Anonymized IP** (SHA-256 hash)
+-   **User Agent** (browser/OS)
+-   **Visited page**
+-   **Referrer**
+-   **Approximate geolocation** (country/region)
+-   **Browser language**
+-   **Unique visitor ID** (UUID, cookie-based with 1-year expiration)
 
--   IP anonimizado (hash SHA-256)
--   User Agent (navegador/SO)
--   Página visitada
--   Referrer
--   Geolocalização aproximada (país/região)
--   Idioma do navegador
+### Cookie Management
 
-**Com consentimento (cookies aceitos):**
+-   **visitor_id cookie** - Tracks unique visitors (1 year expiration)
+-   Same visitor = multiple total visits but only 1 unique visit
+-   Cookie is set automatically on first visit
+-   httpOnly and sameSite security flags enabled
 
--   ID único do visitante (UUID)
--   Histórico de visitas
--   Tempo de permanência
--   Padrões de navegação
+### Compliance
 
-### Conformidade
+✅ IPs are always anonymized  
+✅ Minimal data collection  
+✅ No cross-site tracking  
+✅ Full transparency about collected data  
+✅ Cookie-based visitor detection
 
-✅ IPs são sempre anonimizados  
-✅ Banner de consentimento obrigatório  
-✅ Usuário pode rejeitar cookies  
-✅ Dados coletados são mínimos  
-✅ Sem rastreamento entre sites  
-✅ Transparência total sobre dados coletados
+## 🆔 How Site ID Control Works
 
-## 🆔 Como Funciona o Controle por Site ID
-
-Cada site/projeto usa um **ID único** (`siteId`) para ter seu próprio contador independente:
+Each site/project uses a **unique UUID** (`siteId`) to have its own independent counter:
 
 ```javascript
 // Site 1
-fetch("/api/count/meu-blog/increment"); // Contador: 1234
+fetch("/api/count/f47ac10b-58cc-4372-a567-0e02b2c3d479/increment"); // Counter: 1234
 
 // Site 2
-fetch("/api/count/portfolio/increment"); // Contador: 567
+fetch("/api/count/a1b2c3d4-e5f6-7890-abcd-ef1234567890/increment"); // Counter: 567
 
 // Site 3
-fetch("/api/count/loja/increment"); // Contador: 890
+fetch("/api/count/9z8y7x6w-5v4u-3t2s-1r0q-p9o8n7m6l5k4/increment"); // Counter: 890
 ```
 
-**Vantagens:**
+**Advantages:**
 
--   ✅ Sem necessidade de configurar domínios
--   ✅ Use em múltiplos sites sem burocracia
--   ✅ Cada site mantém seu contador separado
--   ✅ Funciona de qualquer origem (CORS liberado)
--   ✅ Controle simples: quem tem o ID, pode usar
+-   ✅ No need to configure domains
+-   ✅ Use on multiple sites without bureaucracy
+-   ✅ Each site maintains its separate counter
+-   ✅ Works from any origin (CORS enabled)
+-   ✅ Simple control: whoever has the ID can use it
+-   ✅ Secure: UUIDs are hard to guess
 
-**Para criar um novo site, é só usar um novo ID!** Não precisa configurar nada no servidor.
+**To create a new site counter, register it via `/api/register` endpoint!**
 
-## 🐳 Deploy com Docker
+## 🐳 Docker Deployment
 
-### Docker Compose (Recomendado)
+### Docker Compose (Recommended)
 
 ```bash
-# Iniciar
-docker-compose up -d
+# Start containers
+docker compose up -d
 
-# Ver logs
-docker-compose logs -f
+# View logs
+docker compose logs -f
 
-# Parar
-docker-compose down
+# Stop containers
+docker compose down
 
-# Resetar banco (CUIDADO!)
-docker-compose down -v
+# Restart containers
+docker compose restart
+
+# Reset database (WARNING: Deletes all data!)
+docker compose down -v
+docker compose up -d
 ```
 
-### Docker Manual
+### Production Deployment
+
+For production deployment with Nginx Proxy Manager and SSL, check out our comprehensive guides:
+
+-   **[DEPLOY.md](./DEPLOY.md)** - Complete production deployment guide
+-   **[AUTO_DEPLOY.md](./AUTO_DEPLOY.md)** - Automated deployment with GitHub webhooks
+-   **[DBEAVER.md](./DBEAVER.md)** - Database connection guide with DBeaver
+
+### Quick Production Setup
+
+1. Edit `.env` with secure passwords
+2. Configure Nginx Proxy Manager for SSL and domain routing
+3. Run `docker compose up -d`
+4. Register your first site via `/api/register`
+5. Use the returned script in your website
+
+### Database Access
 
 ```bash
-# Build
-docker build -t contador-visitas .
+# Connect to PostgreSQL
+docker exec -it contador-visitas-db psql -U postgres -d contador_visitas
 
-# Run
-docker run -d \
-  -p 3000:3000 \
-  --env-file .env \
-  --name contador-visitas \
-  contador-visitas
+# View registered sites
+SELECT id, domain, total_visits, unique_visits FROM sites;
+
+# Exit
+\q
 ```
 
-## 🛠️ Desenvolvimento
+## 🛠️ Development
 
-### Instalar dependências
+### Install Dependencies
 
 ```bash
 npm install
 ```
 
-### Executar em modo desenvolvimento
+### Run Development Server
 
 ```bash
 npm run dev
 ```
 
-### Executar migrations
+### Run Migrations
 
 ```bash
 npm run migrate
 ```
 
-### Estrutura do Projeto
+### Project Structure
 
 ```
 contador-de-visitas/
 ├── src/
-│   ├── app.js              # Servidor Express
+│   ├── app.js              # Express server
 │   ├── config/
-│   │   └── database.js     # Configuração PostgreSQL
+│   │   └── database.js     # PostgreSQL configuration
 │   ├── models/
-│   │   ├── Site.js         # Model de Sites
-│   │   ├── Visit.js        # Model de Visitas
-│   │   └── Visitor.js      # Model de Visitantes
+│   │   ├── Site.js         # Site model (UUID-based)
+│   │   ├── Visit.js        # Visit model
+│   │   └── Visitor.js      # Visitor model
 │   ├── routes/
-│   │   └── counter.js      # Rotas da API
+│   │   └── counter.js      # API routes (register, count, stats, etc.)
 │   ├── services/
-│   │   └── badge.js        # Gerador de badges SVG
+│   │   └── badge.js        # SVG badge generator
 │   ├── utils/
-│   │   └── analytics.js    # Utilitários analytics
+│   │   └── analytics.js    # Analytics utilities
 │   └── migrations/
-│       └── run.js          # Script de migration
+│       └── run.js          # Migration script
 ├── public/
-│   ├── widget.js           # Widget JavaScript
-│   └── exemplo.html        # Página de exemplo
-├── docker-compose.yml
-├── Dockerfile
+│   ├── widget.js           # JavaScript widget
+│   └── exemplo.html        # Example page
+├── docker-compose.yml      # Docker orchestration
+├── Dockerfile              # Node.js 18 Alpine image
 ├── package.json
-└── .env.example
+├── .env.example            # Environment variables template
+├── DEPLOY.md               # Production deployment guide
+├── AUTO_DEPLOY.md          # Automated deployment guide
+└── DBEAVER.md              # Database connection guide
 ```
 
-## 📊 Banco de Dados
+## 📊 Database Schema
 
-### Tabelas
+### Tables
 
 **sites**
 
--   Configurações de cada site
--   Contadores totais (total e único)
--   Preferências de badge
+-   `id` (UUID, primary key) - Unique site identifier
+-   `domain` (string) - Site domain (optional)
+-   `total_visits` (integer) - Total visit count
+-   `unique_visits` (integer) - Unique visitor count
+-   `badge_style`, `badge_color`, `badge_label`, `badge_logo` - Badge customization
+-   `customizable` (boolean) - Whether site can customize badge
+-   `created_at`, `updated_at` - Timestamps
 
 **visitors**
 
--   Visitantes únicos
--   Consentimentos de cookies
--   Estatísticas de visitas
+-   Unique visitor tracking
+-   Cookie consent management
+-   Visit statistics
 
 **visits**
 
--   Registro de cada visita
--   Dados técnicos e analytics
--   Geolocalização
+-   Individual visit records
+-   Technical data and analytics
+-   Geolocation data
+-   Referrer and page information
 
 ## ❓ FAQ
 
-### Preciso configurar CORS?
+### Do I need to configure CORS?
 
-**Não!** O CORS está liberado para qualquer origem. Basta usar o `siteId` correto.
+**No!** CORS is enabled for all origins. Just use the correct `siteId`.
 
-### Como adiciono um novo site?
+### How do I add a new site?
 
-**É automático!** Só use um novo `siteId` na URL e o sistema cria o contador automaticamente:
+**Register it via API!** Use the `/api/register` endpoint with admin credentials:
 
-```javascript
-fetch("/api/count/novo-site/increment"); // Contador criado automaticamente!
+```bash
+curl -X POST http://localhost:3000/api/register \
+  -H "Content-Type: application/json" \
+  -d '{"user":"admin","password":"password","customizable":true}'
 ```
 
-### Posso usar em múltiplos domínios?
+You'll receive a unique UUID to use in your website.
 
-**Sim!** Use o mesmo `siteId` em todos os sites onde quiser compartilhar o contador, ou use IDs diferentes para contadores separados.
+### Can I use it on multiple domains?
 
-### É seguro deixar o CORS aberto?
+**Yes!** Use the same `siteId` on all sites where you want to share the counter, or use different UUIDs for separate counters.
 
-**Sim!** O controle de acesso é pelo `siteId`, não por domínio. Quem não souber o ID correto não consegue acessar o contador de outro site.
+### Is it safe to leave CORS open?
 
-### Como proteger meu contador?
+**Yes!** Access control is by `siteId` (UUID), not by domain. Without knowing the exact UUID, no one can access another site's counter. UUIDs are cryptographically random and very hard to guess.
 
-Use `siteId` aleatórios ou difíceis de adivinhar:
+### How do I protect my counter?
+
+UUIDs generated by the `/api/register` endpoint are already secure and hard to guess:
 
 ```javascript
-// ❌ Fácil de adivinhar
-fetch("/api/count/site1/increment");
-
-// ✅ Difícil de adivinhar
-fetch("/api/count/a7f2e9b3-4d1c-4f8e-9a2b-c5d8e1f6a3b7/increment");
+// ✅ Secure UUID (generated automatically)
+fetch("/api/count/f47ac10b-58cc-4372-a567-0e02b2c3d479/increment");
 ```
 
-### Posso ver estatísticas de outros sites?
+### Can I see statistics from other sites?
 
-**Não!** Você só consegue ver estatísticas se souber o `siteId` exato. Cada contador é isolado.
+**No!** You can only see statistics if you know the exact `siteId` UUID. Each counter is isolated.
 
-## 🤝 Contribuindo
+### What's the difference between /count and /count/increment?
 
-Contribuições são bem-vindas! Por favor:
+-   `GET /api/count/:siteId` - **Read-only**, doesn't track the visit, just returns current count
+-   `GET /api/count/:siteId/increment` - **Tracks the visit** (increments counter) AND returns the count
 
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/MinhaFeature`)
-3. Commit suas mudanças (`git commit -m 'Adiciona MinhaFeature'`)
-4. Push para a branch (`git push origin feature/MinhaFeature`)
-5. Abra um Pull Request
+Use `/increment` when you want to track every page load, or `/count` when you just want to display the current number without tracking.
 
-## 📄 Licença
+## 🤝 Contributing
 
-MIT License - veja o arquivo LICENSE para detalhes
+Contributions are welcome! Please:
 
-## 💬 Suporte
+1. Fork the project
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-Para dúvidas ou problemas, abra uma issue no GitHub.
+## 📄 License
+
+MIT License - see LICENSE file for details
+
+## 💬 Support
+
+For questions or issues, open an issue on GitHub.
+
+## 🔗 Links
+
+-   **GitHub Repository**: [icastelito/contador-de-visitas](https://github.com/icastelito/contador-de-visitas)
+-   **Docker Hub**: Coming soon
+-   **Documentation**: [DEPLOY.md](./DEPLOY.md), [AUTO_DEPLOY.md](./AUTO_DEPLOY.md), [DBEAVER.md](./DBEAVER.md)
 
 ---
 
-Feito com ❤️ usando Node.js, PostgreSQL e Docker
+Made with ❤️ using Node.js, PostgreSQL and Docker
+
+**Star ⭐ this repo if you find it useful!**
