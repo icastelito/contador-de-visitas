@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Teste Rápido - Contador Customizado</title>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				max-width: 800px;
+				margin: 50px auto;
+				padding: 20px;
+				background: #f5f5f5;
+			}
+			.container {
+				background: white;
+				padding: 40px;
+				border-radius: 12px;
+				box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+			}
+			h1 {
+				color: #333;
+			}
+			.badge {
+				display: inline-flex;
+				align-items: center;
+				padding: 15px 30px;
+				margin: 20px 10px;
+				border-radius: 8px;
+				font-size: 18px;
+				font-weight: 600;
+				transition: transform 0.3s ease;
+			}
+			.badge:hover {
+				transform: scale(1.05);
+			}
+			.badge1 {
+				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				color: white;
+				box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+			}
+			.badge2 {
+				background: #27ae60;
+				color: white;
+			}
+			.badge3 {
+				background: #f39c12;
+				color: white;
+				border-radius: 50px;
+			}
+			.badge4 {
+				background: white;
+				color: #333;
+				border: 3px solid #667eea;
+			}
+			pre {
+				background: #2d2d2d;
+				color: #f8f8f2;
+				padding: 15px;
+				border-radius: 5px;
+				overflow-x: auto;
+			}
+			.section {
+				margin: 40px 0;
+				padding: 20px;
+				background: #f9f9f9;
+				border-radius: 8px;
+				border-left: 4px solid #667eea;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<h1>🎨 Teste de Contadores Customizados</h1>
+			<p>Exemplos de tags totalmente customizadas usando apenas a API:</p>
+
+			<div class="section">
+				<h2>Estilo 1: Gradiente Moderno</h2>
+				<div class="badge badge1">👁️ <span id="count1">...</span> visitas</div>
+				<pre><code>&lt;div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+     color: white; padding: 15px 30px; border-radius: 8px;"&gt;
+  👁️ &lt;span id="contador"&gt;0&lt;/span&gt; visitas
+&lt;/div&gt;
+
+&lt;script&gt;
+fetch('/api/count/teste/increment?format=text')
+  .then(r => r.text())
+  .then(n => document.getElementById('contador').textContent = n);
+&lt;/script&gt;</code></pre>
+			</div>
+
+			<div class="section">
+				<h2>Estilo 2: Simples e Limpo</h2>
+				<div class="badge badge2">VISITANTES: <span id="count2">...</span></div>
+				<pre><code>fetch('/api/count/teste?format=formatted')
+  .then(r => r.text())
+  .then(n => console.log(n)); // "1.2K"</code></pre>
+			</div>
+
+			<div class="section">
+				<h2>Estilo 3: Pill</h2>
+				<div class="badge badge3">🔥 <span id="count3">...</span>+</div>
+			</div>
+
+			<div class="section">
+				<h2>Estilo 4: Minimalista</h2>
+				<div class="badge badge4"><span id="count4">...</span> views</div>
+			</div>
+
+			<div class="section">
+				<h2>📊 Teste dos Endpoints</h2>
+				<button onclick="testarJSON()">Testar JSON</button>
+				<button onclick="testarText()">Testar Text</button>
+				<button onclick="testarFormatted()">Testar Formatted</button>
+				<button onclick="testarIncrement()">Testar Increment</button>
+
+				<pre id="resultado">Clique nos botões para testar...</pre>
+			</div>
+
+			<div class="section">
+				<h2>ℹ️ Informações</h2>
+				<p><strong>Site ID:</strong> teste</p>
+				<p><strong>Endpoints disponíveis:</strong></p>
+				<ul>
+					<li><code>GET /api/count/teste</code> - JSON completo</li>
+					<li><code>GET /api/count/teste?format=text</code> - Apenas número</li>
+					<li><code>GET /api/count/teste?format=formatted</code> - Formatado (1.2K)</li>
+					<li><code>GET /api/count/teste/increment</code> - Incrementa e retorna</li>
+				</ul>
+			</div>
+		</div>
+
+		<script>
+			// Atualizar todos os contadores ao carregar
+			async function atualizarContadores() {
+				try {
+					// Primeira chamada incrementa
+					const response = await fetch("http://localhost:3000/api/count/teste/increment?format=text", {
+						credentials: "include",
+					});
+					const count = await response.text();
+
+					document.getElementById("count1").textContent = count;
+					document.getElementById("count2").textContent = count;
+					document.getElementById("count3").textContent = count;
+					document.getElementById("count4").textContent = count;
+
+					console.log("✅ Contadores atualizados:", count);
+				} catch (error) {
+					console.error("❌ Erro:", error);
+				}
+			}
+
+			// Testes dos endpoints
+			async function testarJSON() {
+				const res = await fetch("http://localhost:3000/api/count/teste");
+				const data = await res.json();
+				document.getElementById("resultado").textContent = JSON.stringify(data, null, 2);
+			}
+
+			async function testarText() {
+				const res = await fetch("http://localhost:3000/api/count/teste?format=text");
+				const data = await res.text();
+				document.getElementById("resultado").textContent = `Resposta: "${data}"\nTipo: text/plain`;
+			}
+
+			async function testarFormatted() {
+				const res = await fetch("http://localhost:3000/api/count/teste?format=formatted");
+				const data = await res.text();
+				document.getElementById("resultado").textContent = `Resposta: "${data}"\nTipo: text/plain (formatado)`;
+			}
+
+			async function testarIncrement() {
+				const res = await fetch("http://localhost:3000/api/count/teste/increment?format=text", {
+					credentials: "include",
+				});
+				const data = await res.text();
+				document.getElementById("resultado").textContent = `Novo valor: "${data}"\n✅ Visita registrada!`;
+
+				// Atualiza os badges
+				atualizarContadores();
+			}
+
+			// Carregar ao iniciar
+			atualizarContadores();
+
+			// Atualizar a cada 30 segundos (sem incrementar)
+			setInterval(async () => {
+				const res = await fetch("http://localhost:3000/api/count/teste?format=text");
+				const count = await res.text();
+				document.getElementById("count1").textContent = count;
+				document.getElementById("count2").textContent = count;
+				document.getElementById("count3").textContent = count;
+				document.getElementById("count4").textContent = count;
+			}, 30000);
+		</script>
+	</body>
+</html>

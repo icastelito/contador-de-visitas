@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Exemplo - Contador de Visitas</title>
+		<style>
+			body {
+				font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+				max-width: 900px;
+				margin: 0 auto;
+				padding: 40px 20px;
+				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				color: #333;
+			}
+			.container {
+				background: white;
+				border-radius: 12px;
+				padding: 40px;
+				box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+			}
+			h1 {
+				color: #667eea;
+				margin-top: 0;
+			}
+			h2 {
+				color: #555;
+				margin-top: 30px;
+				border-bottom: 2px solid #667eea;
+				padding-bottom: 10px;
+			}
+			pre {
+				background: #f5f5f5;
+				padding: 15px;
+				border-radius: 8px;
+				overflow-x: auto;
+				border-left: 4px solid #667eea;
+			}
+			code {
+				font-family: "Courier New", monospace;
+				font-size: 14px;
+			}
+			.example-box {
+				margin: 20px 0;
+				padding: 20px;
+				background: #f9f9f9;
+				border-radius: 8px;
+				border: 1px solid #ddd;
+			}
+			.badge-examples {
+				display: flex;
+				gap: 15px;
+				flex-wrap: wrap;
+				margin: 20px 0;
+			}
+			.badge-examples img {
+				border: 1px solid #ddd;
+				border-radius: 4px;
+				padding: 5px;
+				background: white;
+			}
+			.stats-container {
+				margin: 20px 0;
+			}
+			#stats-output {
+				background: #f5f5f5;
+				padding: 15px;
+				border-radius: 8px;
+				font-family: monospace;
+				white-space: pre-wrap;
+				min-height: 100px;
+			}
+			button {
+				background: #667eea;
+				color: white;
+				border: none;
+				padding: 10px 20px;
+				border-radius: 6px;
+				cursor: pointer;
+				font-size: 16px;
+				font-weight: 500;
+				transition: background 0.3s;
+			}
+			button:hover {
+				background: #5568d3;
+			}
+			.info-box {
+				background: #e3f2fd;
+				border-left: 4px solid #2196f3;
+				padding: 15px;
+				margin: 20px 0;
+				border-radius: 4px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<h1>🎉 Contador de Visitas Funcionando!</h1>
+
+			<div class="info-box">
+				<strong>✨ Widget carregado com sucesso!</strong><br />
+				O banner de consentimento de cookies deve aparecer na primeira visita.
+			</div>
+
+			<h2>📊 Badges Disponíveis</h2>
+			<div class="badge-examples">
+				<div>
+					<p><strong>Flat (Padrão)</strong></p>
+					<img src="http://localhost:3000/api/badge/exemplo?style=flat&color=blue" alt="Badge Flat" />
+				</div>
+				<div>
+					<p><strong>Flat Square</strong></p>
+					<img
+						src="http://localhost:3000/api/badge/exemplo?style=flat-square&color=green"
+						alt="Badge Flat Square"
+					/>
+				</div>
+				<div>
+					<p><strong>Plastic</strong></p>
+					<img src="http://localhost:3000/api/badge/exemplo?style=plastic&color=orange" alt="Badge Plastic" />
+				</div>
+				<div>
+					<p><strong>For the Badge</strong></p>
+					<img
+						src="http://localhost:3000/api/badge/exemplo?style=for-the-badge&color=red&label=Views"
+						alt="Badge For The Badge"
+					/>
+				</div>
+			</div>
+
+			<h2>💻 Código de Integração</h2>
+
+			<div class="example-box">
+				<h3>Opção 1: Widget Completo (Recomendado)</h3>
+				<pre><code>&lt;script src="http://localhost:3000/widget.js" 
+        data-site-id="meu-site"
+        data-show-badge="true"
+        data-badge-position="bottom-right"&gt;
+&lt;/script&gt;</code></pre>
+			</div>
+
+			<div class="example-box">
+				<h3>Opção 2: Apenas Badge</h3>
+				<pre><code>&lt;img src="http://localhost:3000/api/badge/meu-site?style=flat&color=blue&label=Visitantes" 
+     alt="Contador de Visitas"&gt;</code></pre>
+			</div>
+
+			<div class="example-box">
+				<h3>Opção 3: Tracking Manual via JavaScript</h3>
+				<pre><code>// Registrar visita manualmente
+fetch('http://localhost:3000/api/track/meu-site', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  credentials: 'include',
+  body: JSON.stringify({
+    page: window.location.href,
+    referrer: document.referrer
+  })
+});</code></pre>
+			</div>
+
+			<h2>📈 Estatísticas do Site</h2>
+			<div class="stats-container">
+				<button onclick="loadStats()">Carregar Estatísticas</button>
+				<div id="stats-output">Clique no botão para carregar...</div>
+			</div>
+
+			<h2>🎨 Personalização</h2>
+			<p>Você pode customizar o badge usando parâmetros na URL:</p>
+			<ul>
+				<li><code>style</code>: flat, flat-square, plastic, for-the-badge</li>
+				<li><code>color</code>: brightgreen, green, yellow, orange, red, blue, ou hex (ex: 007acc)</li>
+				<li><code>label</code>: Texto customizado (ex: Visitantes, Views, Acessos)</li>
+				<li><code>logo</code>: Emoji ou unicode (ex: 👁️, 📊)</li>
+			</ul>
+
+			<h2>🔗 API Endpoints</h2>
+			<ul>
+				<li><code>GET /api/badge/:siteId</code> - Badge SVG</li>
+				<li><code>POST /api/track/:siteId</code> - Registrar visita</li>
+				<li><code>POST /api/consent/:siteId</code> - Atualizar consentimento</li>
+				<li><code>GET /api/count/:siteId</code> - Contador simples</li>
+				<li><code>GET /api/stats/:siteId</code> - Estatísticas detalhadas</li>
+				<li><code>PUT /api/config/:siteId</code> - Configurar badge padrão</li>
+			</ul>
+
+			<h2>🔒 LGPD e Privacidade</h2>
+			<ul>
+				<li>✅ IPs são anonimizados (hash SHA-256)</li>
+				<li>✅ Banner de consentimento exibido na primeira visita</li>
+				<li>✅ Dados coletados apenas com permissão</li>
+				<li>✅ Geolocalização baseada apenas em IP</li>
+				<li>✅ Sem rastreamento entre sites</li>
+			</ul>
+		</div>
+
+		<!-- Widget do contador -->
+		<script
+			src="http://localhost:3000/widget.js"
+			data-site-id="exemplo"
+			data-show-badge="true"
+			data-badge-position="bottom-right"
+		></script>
+
+		<script>
+			// Função para carregar estatísticas
+			async function loadStats() {
+				const output = document.getElementById("stats-output");
+				output.textContent = "Carregando...";
+
+				try {
+					const response = await fetch("http://localhost:3000/api/stats/exemplo?days=30");
+					const data = await response.json();
+					output.textContent = JSON.stringify(data, null, 2);
+				} catch (error) {
+					output.textContent = "Erro ao carregar estatísticas: " + error.message;
+				}
+			}
+		</script>
+	</body>
+</html>

@@ -1,0 +1,404 @@
+{
+	"info": {
+		"name": "Contador de Visitas API",
+		"description": "Collection completa para testar a API do Contador de Visitas",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "site_id",
+			"value": "teste-postman",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/health",
+					"host": ["{{base_url}}"],
+					"path": ["health"]
+				},
+				"description": "Verifica se o servidor está rodando"
+			}
+		},
+		{
+			"name": "Badges",
+			"item": [
+				{
+					"name": "Badge Padrão",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/badge/{{site_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "badge", "{{site_id}}"]
+						},
+						"description": "Retorna badge SVG com estilo padrão"
+					}
+				},
+				{
+					"name": "Badge Customizado",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/badge/{{site_id}}?style=flat-square&color=blue&label=Visitantes&logo=👁️",
+							"host": ["{{base_url}}"],
+							"path": ["api", "badge", "{{site_id}}"],
+							"query": [
+								{
+									"key": "style",
+									"value": "flat-square",
+									"description": "flat | flat-square | plastic | for-the-badge"
+								},
+								{
+									"key": "color",
+									"value": "blue",
+									"description": "Nome da cor ou código hex"
+								},
+								{
+									"key": "label",
+									"value": "Visitantes"
+								},
+								{
+									"key": "logo",
+									"value": "👁️"
+								}
+							]
+						},
+						"description": "Badge SVG com customização via query params"
+					}
+				}
+			]
+		},
+		{
+			"name": "Contador",
+			"item": [
+				{
+					"name": "Get Count (JSON)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/count/{{site_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "count", "{{site_id}}"]
+						},
+						"description": "Retorna contador em formato JSON sem incrementar"
+					}
+				},
+				{
+					"name": "Get Count (Text)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/count/{{site_id}}?format=text",
+							"host": ["{{base_url}}"],
+							"path": ["api", "count", "{{site_id}}"],
+							"query": [
+								{
+									"key": "format",
+									"value": "text"
+								}
+							]
+						},
+						"description": "Retorna apenas o número como texto (ex: 1234)"
+					}
+				},
+				{
+					"name": "Get Count (Formatted)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/count/{{site_id}}?format=formatted",
+							"host": ["{{base_url}}"],
+							"path": ["api", "count", "{{site_id}}"],
+							"query": [
+								{
+									"key": "format",
+									"value": "formatted"
+								}
+							]
+						},
+						"description": "Retorna número formatado (ex: 1.2K, 1.5M)"
+					}
+				},
+				{
+					"name": "Increment Count (JSON)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/count/{{site_id}}/increment",
+							"host": ["{{base_url}}"],
+							"path": ["api", "count", "{{site_id}}", "increment"]
+						},
+						"description": "Incrementa o contador E retorna o valor (com cookies)"
+					}
+				},
+				{
+					"name": "Increment Count (Text)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/count/{{site_id}}/increment?format=text",
+							"host": ["{{base_url}}"],
+							"path": ["api", "count", "{{site_id}}", "increment"],
+							"query": [
+								{
+									"key": "format",
+									"value": "text"
+								}
+							]
+						},
+						"description": "Incrementa e retorna apenas o número"
+					}
+				},
+				{
+					"name": "Increment Count (Formatted)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/count/{{site_id}}/increment?format=formatted",
+							"host": ["{{base_url}}"],
+							"path": ["api", "count", "{{site_id}}", "increment"],
+							"query": [
+								{
+									"key": "format",
+									"value": "formatted"
+								}
+							]
+						},
+						"description": "Incrementa e retorna formatado (1.2K)"
+					}
+				}
+			]
+		},
+		{
+			"name": "Tracking",
+			"item": [
+				{
+					"name": "Track Visit",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"page\": \"https://meusite.com/pagina-teste\",\n  \"referrer\": \"https://google.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/track/{{site_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "track", "{{site_id}}"]
+						},
+						"description": "Registra uma visita com dados opcionais de página e referrer"
+					}
+				}
+			]
+		},
+		{
+			"name": "Consentimento",
+			"item": [
+				{
+					"name": "Update Consent",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"visitorId\": \"{{visitor_id}}\",\n  \"cookieConsent\": true,\n  \"analyticsConsent\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/consent/{{site_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "consent", "{{site_id}}"]
+						},
+						"description": "Atualiza consentimento de cookies (use o visitorId retornado pelo track)"
+					}
+				}
+			]
+		},
+		{
+			"name": "Estatísticas",
+			"item": [
+				{
+					"name": "Get Stats (30 dias)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/stats/{{site_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "stats", "{{site_id}}"]
+						},
+						"description": "Retorna estatísticas detalhadas dos últimos 30 dias"
+					}
+				},
+				{
+					"name": "Get Stats (7 dias)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/stats/{{site_id}}?days=7",
+							"host": ["{{base_url}}"],
+							"path": ["api", "stats", "{{site_id}}"],
+							"query": [
+								{
+									"key": "days",
+									"value": "7"
+								}
+							]
+						},
+						"description": "Estatísticas dos últimos 7 dias"
+					}
+				},
+				{
+					"name": "Get Stats (90 dias)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/stats/{{site_id}}?days=90",
+							"host": ["{{base_url}}"],
+							"path": ["api", "stats", "{{site_id}}"],
+							"query": [
+								{
+									"key": "days",
+									"value": "90"
+								}
+							]
+						},
+						"description": "Estatísticas dos últimos 90 dias"
+					}
+				}
+			]
+		},
+		{
+			"name": "Configuração",
+			"item": [
+				{
+					"name": "Update Badge Config",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"badgeStyle\": \"flat-square\",\n  \"badgeColor\": \"4c1\",\n  \"badgeLabel\": \"Visitas\",\n  \"badgeLogo\": \"📊\",\n  \"domain\": \"meusite.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/config/{{site_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "config", "{{site_id}}"]
+						},
+						"description": "Atualiza configurações padrão do badge para o site"
+					}
+				}
+			]
+		},
+		{
+			"name": "Testes Múltiplos Sites",
+			"item": [
+				{
+					"name": "Increment Site 1",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/count/site-1/increment?format=text",
+							"host": ["{{base_url}}"],
+							"path": ["api", "count", "site-1", "increment"],
+							"query": [
+								{
+									"key": "format",
+									"value": "text"
+								}
+							]
+						},
+						"description": "Testa contador para site-1"
+					}
+				},
+				{
+					"name": "Increment Site 2",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/count/site-2/increment?format=text",
+							"host": ["{{base_url}}"],
+							"path": ["api", "count", "site-2", "increment"],
+							"query": [
+								{
+									"key": "format",
+									"value": "text"
+								}
+							]
+						},
+						"description": "Testa contador para site-2"
+					}
+				},
+				{
+					"name": "Increment Site 3",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/count/site-3/increment?format=text",
+							"host": ["{{base_url}}"],
+							"path": ["api", "count", "site-3", "increment"],
+							"query": [
+								{
+									"key": "format",
+									"value": "text"
+								}
+							]
+						},
+						"description": "Testa contador para site-3"
+					}
+				},
+				{
+					"name": "Get All Counts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/count/{{site_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "count", "{{site_id}}"]
+						},
+						"description": "Verifica contador do site de teste"
+					}
+				}
+			]
+		}
+	]
+}
