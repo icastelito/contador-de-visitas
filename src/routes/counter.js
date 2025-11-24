@@ -168,11 +168,12 @@ router.post("/track/:siteId", async (req, res) => {
 			});
 
 			// Define cookie (1 ano)
+			const isProduction = process.env.NODE_ENV === "production";
 			res.cookie("visitor_id", visitorId, {
 				maxAge: 365 * 24 * 60 * 60 * 1000,
 				httpOnly: true,
-				sameSite: "none",
-				secure: process.env.NODE_ENV === "production",
+				sameSite: isProduction ? "none" : "lax",
+				secure: isProduction,
 			});
 
 			site.uniqueVisits += 1;
@@ -331,11 +332,12 @@ router.get("/count/:siteId/increment", async (req, res) => {
 				analyticsConsent: false,
 			});
 
+			const isProduction = process.env.NODE_ENV === "production";
 			res.cookie("visitor_id", visitorId, {
 				maxAge: 365 * 24 * 60 * 60 * 1000,
 				httpOnly: true,
-				sameSite: "none",
-				secure: process.env.NODE_ENV === "production",
+				sameSite: isProduction ? "none" : "lax",
+				secure: isProduction,
 			});
 
 			site.uniqueVisits += 1;
