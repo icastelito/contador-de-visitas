@@ -138,10 +138,12 @@ router.post("/track/:siteId", async (req, res) => {
 			return res.status(404).json({ error: "Site não encontrado" });
 		}
 
-		// Verifica cookie de visitor_id
-		let visitorId = req.cookies?.visitor_id;
+		// Verifica cookie de visitor_id (tenta assinado primeiro, depois não assinado)
+		let visitorId = req.signedCookies?.visitor_id || req.cookies?.visitor_id;
 		let visitor = null;
 		let isNewVisitor = false;
+
+		console.log(`[TRACK] siteId: ${siteId}, visitorId: ${visitorId || 'novo'}`);
 
 		if (visitorId) {
 			visitor = await Visitor.findOne({
@@ -150,9 +152,12 @@ router.post("/track/:siteId", async (req, res) => {
 
 			if (visitor) {
 				// Visitante retornando
+				console.log(`[TRACK] Visitante existente encontrado: ${visitorId}`);
 				visitor.visitCount += 1;
 				visitor.lastVisit = new Date();
 				await visitor.save();
+			} else {
+				console.log(`[TRACK] Cookie encontrado mas visitante não existe no DB: ${visitorId}`);
 			}
 		}
 
@@ -160,6 +165,8 @@ router.post("/track/:siteId", async (req, res) => {
 			// Novo visitante
 			isNewVisitor = true;
 			visitorId = uuidv4();
+			console.log(`[TRACK] Criando novo visitante: ${visitorId}`);
+			
 			visitor = await Visitor.create({
 				id: visitorId,
 				siteId,
@@ -171,9 +178,10 @@ router.post("/track/:siteId", async (req, res) => {
 			const isProduction = process.env.NODE_ENV === "production";
 			res.cookie("visitor_id", visitorId, {
 				maxAge: 365 * 24 * 60 * 60 * 1000,
-				httpOnly: true,
+				httpOnly: false, // Mudado para false para facilitar debug
 				sameSite: isProduction ? "none" : "lax",
 				secure: isProduction,
+				signed: false, // Não assinar o cookie
 			});
 
 			site.uniqueVisits += 1;
@@ -305,10 +313,12 @@ router.get("/count/:siteId/increment", async (req, res) => {
 			return res.status(404).json({ error: "Site não encontrado" });
 		}
 
-		// Verifica cookie de visitor_id
-		let visitorId = req.cookies?.visitor_id;
+		// Verifica cookie de visitor_id (tenta assinado primeiro, depois não assinado)
+		let visitorId = req.signedCookies?.visitor_id || req.cookies?.visitor_id;
 		let visitor = null;
 		let isNewVisitor = false;
+
+		console.log(`[INCREMENT] siteId: ${siteId}, visitorId: ${visitorId || 'novo'}`);
 
 		if (visitorId) {
 			visitor = await Visitor.findOne({
@@ -316,15 +326,20 @@ router.get("/count/:siteId/increment", async (req, res) => {
 			});
 
 			if (visitor) {
+				console.log(`[INCREMENT] Visitante existente encontrado: ${visitorId}`);
 				visitor.visitCount += 1;
 				visitor.lastVisit = new Date();
 				await visitor.save();
+			} else {
+				console.log(`[INCREMENT] Cookie encontrado mas visitante não existe no DB: ${visitorId}`);
 			}
 		}
 
 		if (!visitor) {
 			isNewVisitor = true;
 			visitorId = uuidv4();
+			console.log(`[INCREMENT] Criando novo visitante: ${visitorId}`);
+			
 			visitor = await Visitor.create({
 				id: visitorId,
 				siteId,
@@ -335,9 +350,10 @@ router.get("/count/:siteId/increment", async (req, res) => {
 			const isProduction = process.env.NODE_ENV === "production";
 			res.cookie("visitor_id", visitorId, {
 				maxAge: 365 * 24 * 60 * 60 * 1000,
-				httpOnly: true,
+				httpOnly: false, // Mudado para false para facilitar debug
 				sameSite: isProduction ? "none" : "lax",
 				secure: isProduction,
+				signed: false, // Não assinar o cookie
 			});
 
 			site.uniqueVisits += 1;
